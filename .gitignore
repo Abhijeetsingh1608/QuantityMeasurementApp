@@ -1,17 +1,60 @@
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-# https://maven.apache.org/wrapper/#usage-without-binary-jar
-.mvn/wrapper/maven-wrapper.jar
+# Build outputs
+/target/
+*.class
+!/target/.gitkeep
+!/target/.placeholder
+!**/src/main/**/target/
+!**/src/test/**/target/
+/target/**/generated-sources/
 
-# Eclipse m2e generated files
-# Eclipse Core
-.project
-# JDT-specific (Eclipse Java Development Tools)
+# Maven
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+.log
+/logs/
+*.log
+
+# Kotlin/Java tooling
+.kotlin
+/out/
+/bin/
+/coverage/
+/jacoco.exec
+/jacoco-ut.exec
+*.class
+
+### IntelliJ IDEA ###
+.idea/*
+!.idea/.gitkeep
+*.iws
+*.iml
+*.ipr
+
+### Eclipse ###
+.metadata
+.apt_generated/
 .classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### OS files ###
+.DS_Store
+Thumbs.db
