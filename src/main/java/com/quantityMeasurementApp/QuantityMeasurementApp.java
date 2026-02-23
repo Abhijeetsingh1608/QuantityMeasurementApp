@@ -1,15 +1,13 @@
 package com.quantityMeasurementApp;
 
-
-
 public class QuantityMeasurementApp {
 
 	public static boolean demonstrateLengthEquality(Length l1, Length l2) {
 		return l1.equals(l2);
 	}
 
-	public static boolean demonstrateLengthComparison(double value1, Length.LengthUnit unit1, double value2,
-			Length.LengthUnit unit2) {
+	public static boolean demonstrateLengthComparison(double value1, LengthUnit unit1, double value2,
+			LengthUnit unit2) {
 
 		Length l1 = new Length(value1, unit1);
 		Length l2 = new Length(value2, unit2);
@@ -20,7 +18,7 @@ public class QuantityMeasurementApp {
 		return result;
 	}
 
-	public static double demonstrateLengthConversion(double value, Length.LengthUnit from, Length.LengthUnit to) {
+	public static double demonstrateLengthConversion(double value, LengthUnit from, LengthUnit to) {
 
 		double result = Length.convert(value, from, to);
 
@@ -38,7 +36,7 @@ public class QuantityMeasurementApp {
 		return result;
 	}
 
-	public static Length demonstrateLengthAddition(Length l1, Length l2, Length.LengthUnit targetUnit) {
+	public static Length demonstrateLengthAddition(Length l1, Length l2, LengthUnit targetUnit) {
 
 		Length result = l1.add(l2, targetUnit);
 
@@ -49,25 +47,24 @@ public class QuantityMeasurementApp {
 
 	public static void main(String[] args) {
 
-		demonstrateLengthComparison(1.0, Length.LengthUnit.FEET, 12.0, Length.LengthUnit.INCHES);
+		demonstrateLengthComparison(1.0, LengthUnit.FEET, 12.0, LengthUnit.INCHES);
 
-		demonstrateLengthComparison(1.0, Length.LengthUnit.YARDS, 3.0, Length.LengthUnit.FEET);
+		demonstrateLengthComparison(1.0, LengthUnit.YARDS, 3.0, LengthUnit.FEET);
 
-		demonstrateLengthComparison(1.0, Length.LengthUnit.YARDS, 36.0, Length.LengthUnit.INCHES);
+		demonstrateLengthComparison(1.0, LengthUnit.YARDS, 36.0, LengthUnit.INCHES);
 
-		demonstrateLengthComparison(1.0, Length.LengthUnit.CENTIMETERS, 0.393701, Length.LengthUnit.INCHES);
+		demonstrateLengthComparison(1.0, LengthUnit.CENTIMETERS, 0.393701, LengthUnit.INCHES);
 
-		demonstrateLengthComparison(2.0, Length.LengthUnit.YARDS, 6.0, Length.LengthUnit.FEET);
+		demonstrateLengthComparison(2.0, LengthUnit.YARDS, 6.0, LengthUnit.FEET);
 
-		demonstrateLengthConversion(1.0, Length.LengthUnit.FEET, Length.LengthUnit.INCHES);
+		demonstrateLengthConversion(1.0, LengthUnit.FEET, LengthUnit.INCHES);
 
-		demonstrateLengthConversion(3.0, Length.LengthUnit.YARDS, Length.LengthUnit.FEET);
+		demonstrateLengthConversion(3.0, LengthUnit.YARDS, LengthUnit.FEET);
 
-		demonstrateLengthConversion(2.54, Length.LengthUnit.CENTIMETERS, Length.LengthUnit.INCHES);
+		demonstrateLengthConversion(2.54, LengthUnit.CENTIMETERS, LengthUnit.INCHES);
 
-		demonstrateLengthAddition(new Length(1.0, Length.LengthUnit.FEET), new Length(12.0, Length.LengthUnit.INCHES));
-
-		demonstrateLengthAddition(new Length(1.0, Length.LengthUnit.FEET), new Length(12.0, Length.LengthUnit.INCHES),
-				Length.LengthUnit.YARDS);
+		demonstrateLengthAddition(new Length(1.0, LengthUnit.FEET), new Length(12.0, LengthUnit.INCHES));
+		
+		demonstrateLengthAddition(new Length(1.0, LengthUnit.FEET), new Length(12.0, LengthUnit.INCHES), LengthUnit.YARDS);
 	}
 }
