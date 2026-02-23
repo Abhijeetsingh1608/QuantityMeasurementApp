@@ -6,8 +6,6 @@ public class Length {
 
     private static final double EPSILON = 1e-6;
 
-	public static final String LengthUnit = null;
-
     private final double value;
     private final LengthUnit unit;
 
