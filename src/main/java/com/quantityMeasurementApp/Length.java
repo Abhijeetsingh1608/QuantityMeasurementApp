@@ -10,6 +10,7 @@ public class Length {
 	public enum LengthUnit {
 
 		FEET(12.0), INCHES(1.0), YARDS(36.0), CENTIMETERS(0.393701);
+
 		private final double conversionFactor;
 
 		LengthUnit(double conversionFactor) {
@@ -41,14 +42,18 @@ public class Length {
 		return Double.compare(this.convertToBaseUnit(), thatLength.convertToBaseUnit()) == 0;
 	}
 
+	private double convertFromBaseToTargetUnit(double lengthInInches, LengthUnit targetUnit) {
+		double convertedValue = lengthInInches / targetUnit.getConversionFactor();
+		return Math.round(convertedValue * 100.0) / 100.0;
+	}
+
 	public Length convertTo(LengthUnit targetUnit) {
 		if (targetUnit == null) {
 			throw new IllegalArgumentException("Target unit must not be null");
 		}
 
 		double valueInInches = this.convertToBaseUnit();
-		double convertedValue = valueInInches / targetUnit.getConversionFactor();
-		double roundedValue = Math.round(convertedValue * 100.0) / 100.0;
+		double roundedValue = convertFromBaseToTargetUnit(valueInInches, targetUnit);
 
 		return new Length(roundedValue, targetUnit);
 	}
@@ -67,6 +72,22 @@ public class Length {
 		double result = valueInInches / target.getConversionFactor();
 
 		return Math.round(result * 100.0) / 100.0;
+	}
+
+	public Length add(Length thatLength) {
+
+		if (thatLength == null) {
+			throw new IllegalArgumentException("Length to add must not be null");
+		}
+
+		double thisInches = this.convertToBaseUnit();
+		double thatInches = thatLength.convertToBaseUnit();
+
+		double sumInches = thisInches + thatInches;
+
+		double resultValue = convertFromBaseToTargetUnit(sumInches, this.unit);
+
+		return new Length(resultValue, this.unit);
 	}
 
 	@Override
