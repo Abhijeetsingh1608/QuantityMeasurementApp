@@ -414,4 +414,293 @@ public class QuantityMeasurementAppTest {
 
 		assertEquals(original, backToFeet, 0.01);
 	}
+
+	@Test
+	public void testEquality_KilogramToKilogram_SameValue() {
+		assertTrue(new Weight(1.0, WeightUnit.KILOGRAM).equals(new Weight(1.0, WeightUnit.KILOGRAM)));
+	}
+
+	@Test
+	public void testEquality_KilogramToKilogram_DifferentValue() {
+		assertFalse(new Weight(1.0, WeightUnit.KILOGRAM).equals(new Weight(2.0, WeightUnit.KILOGRAM)));
+	}
+
+	@Test
+	public void testEquality_GramToGram_SameValue() {
+		assertTrue(new Weight(100.0, WeightUnit.GRAM).equals(new Weight(100.0, WeightUnit.GRAM)));
+	}
+
+	@Test
+	public void testEquality_PoundToPound_SameValue() {
+		assertTrue(new Weight(2.0, WeightUnit.POUND).equals(new Weight(2.0, WeightUnit.POUND)));
+	}
+
+	@Test
+	public void testEquality_KilogramToGram_EquivalentValue() {
+		assertTrue(new Weight(1.0, WeightUnit.KILOGRAM).equals(new Weight(1000.0, WeightUnit.GRAM)));
+	}
+
+	@Test
+	public void testEquality_GramToKilogram_EquivalentValue() {
+		assertTrue(new Weight(1000.0, WeightUnit.GRAM).equals(new Weight(1.0, WeightUnit.KILOGRAM)));
+	}
+
+	@Test
+	public void testEquality_KilogramToPound_EquivalentValue() {
+		assertTrue(new Weight(1.0, WeightUnit.KILOGRAM).equals(new Weight(2.20462, WeightUnit.POUND)));
+	}
+
+	@Test
+	public void testEquality_GramToPound_EquivalentValue() {
+		assertTrue(new Weight(453.592, WeightUnit.GRAM).equals(new Weight(1.0, WeightUnit.POUND)));
+	}
+
+	@Test
+	public void testEquality_WeightVsLength_Incompatible() {
+		Weight weight = new Weight(1.0, WeightUnit.KILOGRAM);
+		Length length = new Length(1.0, LengthUnit.FEET);
+		assertFalse(weight.equals(length));
+	}
+
+	@Test
+	public void testEquality_Weight_NullComparison() {
+		Weight weight = new Weight(1.0, WeightUnit.KILOGRAM);
+		assertFalse(weight.equals(null));
+	}
+
+	@Test
+	public void testEquality_Weight_SameReference() {
+		Weight weight = new Weight(2.0, WeightUnit.KILOGRAM);
+		assertTrue(weight.equals(weight));
+	}
+
+	@Test
+	public void testEquality_Weight_NullUnit() {
+		assertThrows(IllegalArgumentException.class, () -> new Weight(1.0, null));
+	}
+
+	@Test
+	public void testEquality_Weight_TransitiveProperty() {
+		Weight kg1 = new Weight(1.0, WeightUnit.KILOGRAM);
+		Weight g1000 = new Weight(1000.0, WeightUnit.GRAM);
+		Weight kg2 = new Weight(1.0, WeightUnit.KILOGRAM);
+
+		assertTrue(kg1.equals(g1000));
+		assertTrue(g1000.equals(kg2));
+		assertTrue(kg1.equals(kg2));
+	}
+
+	@Test
+	public void testEquality_Weight_ZeroValue() {
+		assertTrue(new Weight(0.0, WeightUnit.KILOGRAM).equals(new Weight(0.0, WeightUnit.GRAM)));
+	}
+
+	@Test
+	public void testEquality_Weight_NegativeWeight() {
+		assertTrue(new Weight(-1.0, WeightUnit.KILOGRAM).equals(new Weight(-1000.0, WeightUnit.GRAM)));
+	}
+
+	@Test
+	public void testEquality_Weight_LargeValue() {
+		assertTrue(new Weight(1000000.0, WeightUnit.GRAM).equals(new Weight(1000.0, WeightUnit.KILOGRAM)));
+	}
+
+	@Test
+	public void testEquality_Weight_SmallValue() {
+		assertTrue(new Weight(0.001, WeightUnit.KILOGRAM).equals(new Weight(1.0, WeightUnit.GRAM)));
+	}
+
+	@Test
+	public void testConversion_KilogramToGram() {
+		double result = Weight.convert(1.0, WeightUnit.KILOGRAM, WeightUnit.GRAM);
+		assertEquals(1000.0, result, 0.01);
+	}
+
+	@Test
+	public void testConversion_GramToKilogram() {
+		double result = Weight.convert(1000.0, WeightUnit.GRAM, WeightUnit.KILOGRAM);
+		assertEquals(1.0, result, 0.01);
+	}
+
+	@Test
+	public void testConversion_PoundToKilogram() {
+		double result = Weight.convert(2.20462, WeightUnit.POUND, WeightUnit.KILOGRAM);
+		assertEquals(1.0, result, 0.01);
+	}
+
+	@Test
+	public void testConversion_KilogramToPound() {
+		double result = Weight.convert(1.0, WeightUnit.KILOGRAM, WeightUnit.POUND);
+		assertEquals(2.20, result, 0.01);
+	}
+
+	@Test
+	public void testConversion_Weight_SameUnit() {
+		Weight result = new Weight(5.0, WeightUnit.KILOGRAM).convertTo(WeightUnit.KILOGRAM);
+		assertEquals(new Weight(5.0, WeightUnit.KILOGRAM), result);
+	}
+
+	@Test
+	public void testConversion_Weight_ZeroValue() {
+		Weight result = new Weight(0.0, WeightUnit.KILOGRAM).convertTo(WeightUnit.GRAM);
+		assertEquals(new Weight(0.0, WeightUnit.GRAM), result);
+	}
+
+	@Test
+	public void testConversion_Weight_NegativeValue() {
+		Weight result = new Weight(-1.0, WeightUnit.KILOGRAM).convertTo(WeightUnit.GRAM);
+		assertEquals(new Weight(-1000.0, WeightUnit.GRAM), result);
+	}
+
+	@Test
+	public void testConversion_Weight_RoundTrip() {
+		Weight original = new Weight(1.5, WeightUnit.KILOGRAM);
+		Weight converted = original.convertTo(WeightUnit.GRAM).convertTo(WeightUnit.KILOGRAM);
+		assertTrue(original.equals(converted));
+	}
+
+	@Test
+	public void testConversion_Weight_Infinite() {
+		assertThrows(IllegalArgumentException.class,
+				() -> Weight.convert(Double.POSITIVE_INFINITY, WeightUnit.KILOGRAM, WeightUnit.GRAM));
+	}
+
+	@Test
+	public void testAddition_Weight_SameUnit_KilogramPlusKilogram() {
+		Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
+		Weight w2 = new Weight(2.0, WeightUnit.KILOGRAM);
+
+		Weight result = w1.add(w2);
+
+		assertEquals(new Weight(3.0, WeightUnit.KILOGRAM), result);
+	}
+
+	@Test
+	public void testAddition_Weight_SameUnit_GramPlusGram() {
+		Weight w1 = new Weight(500.0, WeightUnit.GRAM);
+		Weight w2 = new Weight(300.0, WeightUnit.GRAM);
+
+		Weight result = w1.add(w2);
+
+		assertEquals(new Weight(800.0, WeightUnit.GRAM), result);
+	}
+
+	@Test
+	public void testAddition_Weight_CrossUnit_KilogramPlusGram() {
+		Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
+		Weight w2 = new Weight(1000.0, WeightUnit.GRAM);
+
+		Weight result = w1.add(w2);
+
+		assertEquals(new Weight(2.0, WeightUnit.KILOGRAM), result);
+	}
+
+	@Test
+	public void testAddition_Weight_CrossUnit_GramPlusKilogram() {
+		Weight w1 = new Weight(500.0, WeightUnit.GRAM);
+		Weight w2 = new Weight(0.5, WeightUnit.KILOGRAM);
+
+		Weight result = w1.add(w2);
+
+		assertEquals(new Weight(1000.0, WeightUnit.GRAM), result);
+	}
+
+	@Test
+	public void testAddition_Weight_CrossUnit_PoundPlusKilogram() {
+		Weight w1 = new Weight(2.20462, WeightUnit.POUND);
+		Weight w2 = new Weight(1.0, WeightUnit.KILOGRAM);
+
+		Weight result = w1.add(w2);
+
+		assertTrue(result.equals(new Weight(4.41, WeightUnit.POUND)));
+	}
+
+	@Test
+	public void testAddition_Weight_ExplicitTargetUnit_Kilogram() {
+		Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
+		Weight w2 = new Weight(1000.0, WeightUnit.GRAM);
+
+		Weight result = w1.add(w2, WeightUnit.KILOGRAM);
+
+		assertEquals(new Weight(2.0, WeightUnit.KILOGRAM), result);
+	}
+
+	@Test
+	public void testAddition_Weight_ExplicitTargetUnit_Gram() {
+		Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
+		Weight w2 = new Weight(1000.0, WeightUnit.GRAM);
+
+		Weight result = w1.add(w2, WeightUnit.GRAM);
+
+		assertEquals(new Weight(2000.0, WeightUnit.GRAM), result);
+	}
+
+	@Test
+	public void testAddition_Weight_ExplicitTargetUnit_Pound() {
+		Weight w1 = new Weight(1.0, WeightUnit.POUND);
+		Weight w2 = new Weight(453.59, WeightUnit.GRAM);
+
+		Weight result = w1.add(w2, WeightUnit.POUND);
+
+		assertTrue(result.equals(new Weight(1.98, WeightUnit.POUND)));
+	}
+
+	@Test
+	public void testAddition_Weight_Commutativity() {
+		Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
+		Weight w2 = new Weight(1000.0, WeightUnit.GRAM);
+
+		assertTrue(w1.add(w2).equals(w2.add(w1)));
+	}
+
+	@Test
+	public void testAddition_Weight_WithZero() {
+		Weight w1 = new Weight(5.0, WeightUnit.KILOGRAM);
+		Weight w2 = new Weight(0.0, WeightUnit.GRAM);
+
+		Weight result = w1.add(w2);
+
+		assertEquals(new Weight(5.0, WeightUnit.KILOGRAM), result);
+	}
+
+	@Test
+	public void testAddition_Weight_NegativeValues() {
+		Weight w1 = new Weight(5.0, WeightUnit.KILOGRAM);
+		Weight w2 = new Weight(-2000.0, WeightUnit.GRAM);
+
+		Weight result = w1.add(w2);
+
+		assertEquals(new Weight(3.0, WeightUnit.KILOGRAM), result);
+	}
+
+	@Test
+	public void testAddition_Weight_NullSecondOperand() {
+		Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
+
+		assertThrows(IllegalArgumentException.class, () -> w1.add(null));
+	}
+
+	@Test
+	public void testAddition_Weight_LargeValues() {
+		Weight w1 = new Weight(1e6, WeightUnit.KILOGRAM);
+		Weight w2 = new Weight(1e6, WeightUnit.KILOGRAM);
+
+		Weight result = w1.add(w2);
+
+		assertEquals(new Weight(2e6, WeightUnit.KILOGRAM), result);
+	}
+
+	@Test
+	public void testWeightUnit_ConvertToBaseUnit() {
+		assertEquals(1.0, WeightUnit.KILOGRAM.convertToBaseUnit(1.0), 1e-9);
+		assertEquals(0.5, WeightUnit.GRAM.convertToBaseUnit(500.0), 1e-9);
+		assertEquals(0.91, WeightUnit.POUND.convertToBaseUnit(2.0), 1e-2);
+	}
+
+	@Test
+	public void testWeightUnit_ConvertFromBaseUnit() {
+		assertEquals(1.0, WeightUnit.KILOGRAM.convertFromBaseUnit(1.0), 1e-9);
+		assertEquals(1000.0, WeightUnit.GRAM.convertFromBaseUnit(1.0), 1e-9);
+		assertEquals(2.20, WeightUnit.POUND.convertFromBaseUnit(1.0), 1e-2);
+	}
 }
