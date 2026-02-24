@@ -1,5 +1,6 @@
 package com.quantityMeasurementApp;
-
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -988,7 +989,7 @@ public class QuantityMeasurementAppTest {
 	void testConversion_GallonToLitre() {
 		Quantity<VolumeUnit> result = new Quantity<>(1.0, VolumeUnit.GALLON).convertTo(VolumeUnit.LITRE);
 
-		assertEquals(3.78541, result.getValue(), EPSILON);
+		assertEquals(3.79, result.getValue(), EPSILON);
 	}
 
 	@Test
@@ -1263,4 +1264,183 @@ public class QuantityMeasurementAppTest {
 		assertEquals(10.0, a.getValue(), EPSILON);
 		assertEquals(5.0, b.getValue(), EPSILON);
 	}
+	
+    @Test
+    void testValidation_NullOperand_ConsistentAcrossOperations() {
+        Quantity<LengthUnit> q = new Quantity<>(10, LengthUnit.FEET);
+
+        assertThrows(IllegalArgumentException.class, () -> q.add(null));
+        assertThrows(IllegalArgumentException.class, () -> q.subtract(null));
+        assertThrows(IllegalArgumentException.class, () -> q.divide(null));
+    }
+
+    @Test
+    void testValidation_CrossCategory_ConsistentAcrossOperations() {
+        Quantity<LengthUnit> length = new Quantity<>(10, LengthUnit.FEET);
+        Quantity<WeightUnit> weight = new Quantity<>(5, WeightUnit.KILOGRAM);
+
+        assertThrows(IllegalArgumentException.class, () -> length.add((Quantity) weight));
+        assertThrows(IllegalArgumentException.class, () -> length.subtract((Quantity) weight));
+        assertThrows(IllegalArgumentException.class, () -> length.divide((Quantity) weight));
+    }
+
+    @Test
+    void testValidation_FiniteValue_ConsistentAcrossOperations() {
+		// Constructor validates finiteness, so we can't create invalid quantities
+		// Test that constructor properly rejects infinite values
+		assertThrows(IllegalArgumentException.class,
+				() -> new Quantity<>(Double.POSITIVE_INFINITY, LengthUnit.FEET));
+		assertThrows(IllegalArgumentException.class, () -> new Quantity<>(Double.NEGATIVE_INFINITY, LengthUnit.FEET));
+		assertThrows(IllegalArgumentException.class, () -> new Quantity<>(Double.NaN, LengthUnit.FEET));
+    }
+
+    @Test
+    void testArithmeticOperation_Add_EnumComputation() throws Exception {
+        Class<?> enumClass = Class.forName("com.quantityMeasurementApp.Quantity$ArithmeticOperation");
+        Object add = Enum.valueOf((Class<Enum>) enumClass, "ADD");
+
+        Method compute = enumClass.getDeclaredMethod("compute", double.class, double.class);
+        compute.setAccessible(true);
+
+        double result = (double) compute.invoke(add, 10.0, 5.0);
+        assertEquals(15.0, result, EPSILON);
+    }
+
+    @Test
+    void testArithmeticOperation_Subtract_EnumComputation() throws Exception {
+        Class<?> enumClass = Class.forName("com.quantityMeasurementApp.Quantity$ArithmeticOperation");
+        Object sub = Enum.valueOf((Class<Enum>) enumClass, "SUBTRACT");
+
+        Method compute = enumClass.getDeclaredMethod("compute", double.class, double.class);
+        compute.setAccessible(true);
+
+        double result = (double) compute.invoke(sub, 10.0, 5.0);
+        assertEquals(5.0, result, EPSILON);
+    }
+
+    @Test
+    void testArithmeticOperation_Divide_EnumComputation() throws Exception {
+        Class<?> enumClass = Class.forName("com.quantityMeasurementApp.Quantity$ArithmeticOperation");
+        Object div = Enum.valueOf((Class<Enum>) enumClass, "DIVIDE");
+
+        Method compute = enumClass.getDeclaredMethod("compute", double.class, double.class);
+        compute.setAccessible(true);
+
+        double result = (double) compute.invoke(div, 10.0, 5.0);
+        assertEquals(2.0, result, EPSILON);
+    }
+
+    @Test
+    void testAdd_UC12_BehaviorPreserved() {
+        Quantity<LengthUnit> q1 = new Quantity<>(1, LengthUnit.FEET);
+        Quantity<LengthUnit> q2 = new Quantity<>(12, LengthUnit.INCHES);
+
+        Quantity<LengthUnit> result = q1.add(q2);
+
+        assertEquals(2.0, result.getValue(), EPSILON);
+        assertEquals(LengthUnit.FEET, result.getUnit());
+    }
+
+    @Test
+    void testSubtract_UC12_BehaviorPreserved() {
+        Quantity<LengthUnit> q1 = new Quantity<>(10, LengthUnit.FEET);
+        Quantity<LengthUnit> q2 = new Quantity<>(6, LengthUnit.INCHES);
+
+        Quantity<LengthUnit> result = q1.subtract(q2);
+
+        assertEquals(9.5, result.getValue(), EPSILON);
+    }
+
+    @Test
+    void testDivide_UC12_BehaviorPreserved() {
+        Quantity<LengthUnit> q1 = new Quantity<>(24, LengthUnit.INCHES);
+        Quantity<LengthUnit> q2 = new Quantity<>(2, LengthUnit.FEET);
+
+        double result = q1.divide(q2);
+
+        assertEquals(1.0, result, EPSILON);
+    }
+
+    @Test
+    void testRounding_AddSubtract_TwoDecimalPlaces() {
+        Quantity<LengthUnit> q1 = new Quantity<>(1.2345, LengthUnit.FEET);
+        Quantity<LengthUnit> q2 = new Quantity<>(1.1111, LengthUnit.FEET);
+
+        Quantity<LengthUnit> result = q1.add(q2);
+
+        assertEquals(2.35, result.getValue(), 0.01);
+    }
+
+    @Test
+    void testRounding_Divide_NoRounding() {
+        Quantity<LengthUnit> q1 = new Quantity<>(7, LengthUnit.FEET);
+        Quantity<LengthUnit> q2 = new Quantity<>(2, LengthUnit.FEET);
+
+        double result = q1.divide(q2);
+
+        assertEquals(3.5, result, EPSILON);
+    }
+
+    @Test
+    void testImmutability_AfterAdd() {
+        Quantity<LengthUnit> q1 = new Quantity<>(10, LengthUnit.FEET);
+        Quantity<LengthUnit> q2 = new Quantity<>(5, LengthUnit.FEET);
+
+        q1.add(q2);
+
+        assertEquals(10, q1.getValue());
+        assertEquals(5, q2.getValue());
+    }
+
+    @Test
+    void testImmutability_AfterSubtract() {
+        Quantity<LengthUnit> q1 = new Quantity<>(10, LengthUnit.FEET);
+        Quantity<LengthUnit> q2 = new Quantity<>(5, LengthUnit.FEET);
+
+        q1.subtract(q2);
+
+        assertEquals(10, q1.getValue());
+        assertEquals(5, q2.getValue());
+    }
+
+    @Test
+    void testImmutability_AfterDivide() {
+        Quantity<LengthUnit> q1 = new Quantity<>(10, LengthUnit.FEET);
+        Quantity<LengthUnit> q2 = new Quantity<>(5, LengthUnit.FEET);
+
+        q1.divide(q2);
+
+        assertEquals(10, q1.getValue());
+        assertEquals(5, q2.getValue());
+    }
+
+    @Test
+    void testAllOperations_AcrossAllCategories() {
+
+        // Length
+        Quantity<LengthUnit> l1 = new Quantity<>(10, LengthUnit.FEET);
+        Quantity<LengthUnit> l2 = new Quantity<>(5, LengthUnit.FEET);
+        assertEquals(5, l1.subtract(l2).getValue());
+
+        // Weight
+        Quantity<WeightUnit> w1 = new Quantity<>(10, WeightUnit.KILOGRAM);
+        Quantity<WeightUnit> w2 = new Quantity<>(5, WeightUnit.KILOGRAM);
+        assertEquals(2, w1.divide(w2));
+
+        // Volume
+        Quantity<VolumeUnit> v1 = new Quantity<>(5, VolumeUnit.LITRE);
+        Quantity<VolumeUnit> v2 = new Quantity<>(2, VolumeUnit.LITRE);
+        assertEquals(3, v1.subtract(v2).getValue());
+    }
+
+    @Test
+    void testHelper_PrivateVisibility() throws Exception {
+        Method method = Quantity.class.getDeclaredMethod(
+                "performBaseArithmetic",
+                Quantity.class,
+                Class.forName("com.quantityMeasurementApp.Quantity$ArithmeticOperation")
+        );
+
+        assertTrue(Modifier.isPrivate(method.getModifiers()));
+    }
 }

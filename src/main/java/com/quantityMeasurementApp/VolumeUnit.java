@@ -16,12 +16,14 @@ public enum VolumeUnit implements IMeasurable {
 
 	@Override
 	public double convertToBaseUnit(double value) {
-		return value * conversionFactor;
+		double result = value * conversionFactor;
+		return Math.round(result * 100.0) / 100.0;
 	}
 
 	@Override
-	public double convertFromBaseUnit(double value) {
-		return value / conversionFactor;
+	public double convertFromBaseUnit(double baseValue) {
+		double result = baseValue / conversionFactor;
+		return Math.round(result * 100.0) / 100.0;
 	}
 
 	@Override
