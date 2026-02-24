@@ -23,7 +23,6 @@ Feet f1 = new Feet(1.0);
 Feet f2 = new Feet(1.0);
 f1.equals(f2); // true - same value
 ```
-
 ---
 
 ## **UC2: Cross-Unit Comparison (Feet + Inches)**
