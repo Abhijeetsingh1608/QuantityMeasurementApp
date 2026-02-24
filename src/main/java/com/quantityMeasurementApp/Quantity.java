@@ -63,38 +63,98 @@ public class Quantity<U extends IMeasurable> {
 	}
 
 	public Quantity<U> add(Quantity<U> other) {
+
+		if (other == null) {
+			throw new IllegalArgumentException("Quantity cannot be null");
+		}
+
+		if (!unit.getClass().equals(other.unit.getClass())) {
+			throw new IllegalArgumentException("Incompatible measurement categories");
+		}
+
+		this.unit.validateOperationSupport("ADD");
+		other.unit.validateOperationSupport("ADD");
+
 		return add(other, this.unit);
 	}
 
 	public Quantity<U> add(Quantity<U> other, U targetUnit) {
 
-		validateArithmeticOperands(other, targetUnit, true);
+		if (other == null) {
+			throw new IllegalArgumentException("Quantity cannot be null");
+		}
 
-		double baseResult = performBaseArithmetic(other, ArithmeticOperation.ADD);
-		double resultValue = targetUnit.convertFromBaseUnit(baseResult);
+		if (targetUnit == null) {
+			throw new IllegalArgumentException("Target unit cannot be null");
+		}
+
+		if (!unit.getClass().equals(other.unit.getClass())) {
+			throw new IllegalArgumentException("Incompatible measurement categories");
+		}
+
+		this.unit.validateOperationSupport("ADD");
+		other.unit.validateOperationSupport("ADD");
+
+		double base1 = this.unit.convertToBaseUnit(this.value);
+		double base2 = other.unit.convertToBaseUnit(other.value);
+
+		double sumBase = base1 + base2;
+		double resultValue = targetUnit.convertFromBaseUnit(sumBase);
 
 		return new Quantity<>(resultValue, targetUnit);
 	}
 
+
+
 	public Quantity<U> subtract(Quantity<U> other) {
-		return subtract(other, this.unit);
+
+		validateArithmeticOperands(other, this.unit, false);
+
+		this.unit.validateOperationSupport("SUBTRACT");
+		other.unit.validateOperationSupport("SUBTRACT");
+
+		double baseResult = performBaseArithmetic(other, ArithmeticOperation.SUBTRACT);
+
+		double resultInTarget = this.unit.convertFromBaseUnit(baseResult);
+
+		resultInTarget = Math.round(resultInTarget * 100.0) / 100.0;
+
+		return new Quantity<>(resultInTarget, this.unit);
 	}
 
 	public Quantity<U> subtract(Quantity<U> other, U targetUnit) {
 
 		validateArithmeticOperands(other, targetUnit, true);
 
-		double baseResult = performBaseArithmetic(other, ArithmeticOperation.SUBTRACT);
-		double resultValue = targetUnit.convertFromBaseUnit(baseResult);
+		this.unit.validateOperationSupport("SUBTRACT");
+		other.unit.validateOperationSupport("SUBTRACT");
 
-		return new Quantity<>(resultValue, targetUnit);
+		double baseThis = this.unit.convertToBaseUnit(this.value);
+		double baseOther = other.unit.convertToBaseUnit(other.value);
+
+		double baseResult = baseThis - baseOther;
+
+		double resultInTarget = targetUnit.convertFromBaseUnit(baseResult);
+
+		resultInTarget = Math.round(resultInTarget * 100.0) / 100.0;
+
+		return new Quantity<>(resultInTarget, targetUnit);
 	}
 
 	public double divide(Quantity<U> other) {
 
 		validateArithmeticOperands(other, null, false);
 
-		return performBaseArithmetic(other, ArithmeticOperation.DIVIDE);
+		this.unit.validateOperationSupport("DIVIDE");
+		other.unit.validateOperationSupport("DIVIDE");
+
+		double baseThis = this.unit.convertToBaseUnit(this.value);
+		double baseOther = other.unit.convertToBaseUnit(other.value);
+
+		if (Math.abs(baseOther) < EPSILON)
+			throw new ArithmeticException("Division by zero");
+
+		return baseThis / baseOther;
 	}
 
 	private void validateArithmeticOperands(Quantity<U> other, U targetUnit, boolean targetUnitRequired) {
@@ -148,6 +208,8 @@ public class Quantity<U extends IMeasurable> {
 			return operation.applyAsDouble(a, b);
 		}
 	}
+
+
 
 	@Override
 	public boolean equals(Object obj) {
