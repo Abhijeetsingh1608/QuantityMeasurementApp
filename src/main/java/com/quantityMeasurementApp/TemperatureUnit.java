@@ -54,4 +54,9 @@ public enum TemperatureUnit implements IMeasurable {
 		throw new UnsupportedOperationException(
 				"Temperature does not support operation: " + operation + " on absolute values.");
 	}
+
+	@Override
+	public String getMeasurementType() {
+		return this.getClass().getSimpleName();
+	}
 }

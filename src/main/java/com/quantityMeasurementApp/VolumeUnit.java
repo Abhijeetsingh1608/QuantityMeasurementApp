@@ -21,13 +21,18 @@ public enum VolumeUnit implements IMeasurable {
 	}
 
 	@Override
-	public double convertFromBaseUnit(double baseValue) {
-		double result = baseValue / conversionFactor;
+	public double convertFromBaseUnit(double value) {
+		double result = value / conversionFactor;
 		return Math.round(result * 100.0) / 100.0;
 	}
 
 	@Override
 	public String getUnitName() {
 		return this.name();
+	}
+
+	@Override
+	public String getMeasurementType() {
+		return this.getClass().getSimpleName();
 	}
 }
