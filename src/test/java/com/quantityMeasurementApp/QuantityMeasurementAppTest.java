@@ -9,6 +9,11 @@ import com.quantityMeasurementApp.repository.IQuantityMeasurementRepository;
 import com.quantityMeasurementApp.repository.QuantityMeasurementCacheRepository;
 import com.quantityMeasurementApp.service.IQuantityMeasurementService;
 import com.quantityMeasurementApp.service.QuantityMeasurementServiceImpl;
+import com.quantityMeasurementApp.unit.IMeasurable;
+import com.quantityMeasurementApp.unit.LengthUnit;
+import com.quantityMeasurementApp.unit.TemperatureUnit;
+import com.quantityMeasurementApp.unit.VolumeUnit;
+import com.quantityMeasurementApp.unit.WeightUnit;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

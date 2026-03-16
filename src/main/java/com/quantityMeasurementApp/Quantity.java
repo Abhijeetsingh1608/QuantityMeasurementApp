@@ -3,6 +3,8 @@ package com.quantityMeasurementApp;
 import java.util.Objects;
 import java.util.function.DoubleBinaryOperator;
 
+import com.quantityMeasurementApp.unit.IMeasurable;
+
 public class Quantity<U extends IMeasurable> {
 
 	private static final double EPSILON = 1e-6;

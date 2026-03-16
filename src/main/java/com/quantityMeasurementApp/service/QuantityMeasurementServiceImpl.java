@@ -1,6 +1,6 @@
 package com.quantityMeasurementApp.service;
 
-import com.quantityMeasurementApp.IMeasurable;
+import com.quantityMeasurementApp.unit.IMeasurable;
 import com.quantityMeasurementApp.Quantity;
 import com.quantityMeasurementApp.dto.QuantityDTO;
 import com.quantityMeasurementApp.exception.QuantityMeasurementException;
@@ -8,13 +8,18 @@ import com.quantityMeasurementApp.model.QuantityMeasurementEntity;
 import com.quantityMeasurementApp.model.QuantityModel;
 import com.quantityMeasurementApp.repository.IQuantityMeasurementRepository;
 import com.quantityMeasurementApp.repository.QuantityMeasurementCacheRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class QuantityMeasurementServiceImpl implements IQuantityMeasurementService {
+
+    private static final Logger logger = LoggerFactory.getLogger(QuantityMeasurementServiceImpl.class);
 
     private final IQuantityMeasurementRepository repository;
 
     public QuantityMeasurementServiceImpl(IQuantityMeasurementRepository repository) {
         this.repository = repository;
+        logger.info("Service initialized with repository: {}", repository.getClass().getSimpleName());
     }
 
     @Override
@@ -37,6 +42,7 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
 
             QuantityMeasurementEntity entity = new QuantityMeasurementEntity(model1, model2, "COMPARE", result);
             repository.save(entity);
+            logger.debug("COMPARE persisted");
 
             return new QuantityDTO(isEqual ? 1.0 : 0.0, result, "Comparison");
 
@@ -64,6 +70,7 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
 
             QuantityMeasurementEntity entity = new QuantityMeasurementEntity(sourceModel, null, "CONVERT", resultModel);
             repository.save(entity);
+            logger.debug("CONVERT persisted");
 
             return new QuantityDTO(convertedValue, targetUnit, quantity.getMeasurementType());
 
@@ -100,6 +107,7 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
 
             QuantityMeasurementEntity entity = new QuantityMeasurementEntity(model1, model2, "ADD", resultModel);
             repository.save(entity);
+            logger.debug("ADD persisted");
 
             return new QuantityDTO(result.getValue(), targetUnit, quantity1.getMeasurementType());
 
@@ -139,6 +147,7 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
 
             QuantityMeasurementEntity entity = new QuantityMeasurementEntity(model1, model2, "SUBTRACT", resultModel);
             repository.save(entity);
+            logger.debug("SUBTRACT persisted");
 
             return new QuantityDTO(result.getValue(), targetUnit, quantity1.getMeasurementType());
 
@@ -170,6 +179,7 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
 
             QuantityMeasurementEntity entity = new QuantityMeasurementEntity(model1, model2, "DIVIDE", String.valueOf(result));
             repository.save(entity);
+            logger.debug("DIVIDE persisted");
 
             return new QuantityDTO(result, "ratio", "Dimensionless");
 
@@ -212,7 +222,9 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
 
             QuantityMeasurementEntity errorEntity = new QuantityMeasurementEntity(model1, model2, operation, e.getMessage(), true);
             repository.save(errorEntity);
+            logger.warn("Operation {} failed and was persisted as error: {}", operation, e.getMessage());
         } catch (Exception ignored) {
+            logger.warn("Failed to persist operation error for {}", operation);
         }
     }
 
@@ -224,9 +236,9 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
         QuantityDTO inches = new QuantityDTO(12.0, QuantityDTO.LengthUnit.INCHES);
 
         QuantityDTO result = service.add(feet, inches);
-        System.out.println("Addition result: " + result);
+        logger.info("Addition result: {}", result);
 
         QuantityDTO compareResult = service.compare(feet, inches);
-        System.out.println("Comparison result: " + compareResult.getUnit());
+        logger.info("Comparison result: {}", compareResult.getUnit());
     }
 }

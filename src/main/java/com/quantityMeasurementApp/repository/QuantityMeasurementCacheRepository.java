@@ -1,10 +1,14 @@
 package com.quantityMeasurementApp.repository;
 
 import com.quantityMeasurementApp.model.QuantityMeasurementEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 class AppendableObjectOutputStream extends ObjectOutputStream {
 
@@ -25,6 +29,8 @@ class AppendableObjectOutputStream extends ObjectOutputStream {
 
 public class QuantityMeasurementCacheRepository implements IQuantityMeasurementRepository {
 
+    private static final Logger logger = LoggerFactory.getLogger(QuantityMeasurementCacheRepository.class);
+
     public static final String FILE_NAME = "quantity_measurement_repo.ser";
 
     List<QuantityMeasurementEntity> quantityMeasurementEntityCache;
@@ -34,6 +40,7 @@ public class QuantityMeasurementCacheRepository implements IQuantityMeasurementR
     private QuantityMeasurementCacheRepository() {
         quantityMeasurementEntityCache = new ArrayList<>();
         loadFromDisk();
+        logger.info("Cache repository initialized with {} entries", quantityMeasurementEntityCache.size());
     }
 
     public static QuantityMeasurementCacheRepository getInstance() {
@@ -54,12 +61,47 @@ public class QuantityMeasurementCacheRepository implements IQuantityMeasurementR
         return new ArrayList<>(quantityMeasurementEntityCache);
     }
 
+    @Override
+    public List<QuantityMeasurementEntity> getMeasurementsByOperation(String operation) {
+        if (operation == null) {
+            return List.of();
+        }
+        return quantityMeasurementEntityCache.stream()
+                .filter(entity -> operation.equalsIgnoreCase(entity.getOperation()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<QuantityMeasurementEntity> getMeasurementsByMeasurementType(String measurementType) {
+        if (measurementType == null) {
+            return List.of();
+        }
+        return quantityMeasurementEntityCache.stream()
+                .filter(entity -> measurementType.equalsIgnoreCase(entity.getThisMeasurementType()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public long getMeasurementCount() {
+        return quantityMeasurementEntityCache.size();
+    }
+
+    @Override
+    public void deleteAllMeasurements() {
+        clearCache();
+    }
+
+    @Override
+    public Map<String, Integer> getPoolStatistics() {
+        return Map.of();
+    }
+
     private void saveToDisk(QuantityMeasurementEntity entity) {
         try (FileOutputStream fos = new FileOutputStream(FILE_NAME, true);
              AppendableObjectOutputStream oos = new AppendableObjectOutputStream(fos)) {
             oos.writeObject(entity);
         } catch (IOException e) {
-            System.err.println("Error saving to disk: " + e.getMessage());
+            logger.error("Error saving to disk", e);
         }
     }
 
@@ -80,7 +122,7 @@ public class QuantityMeasurementCacheRepository implements IQuantityMeasurementR
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error loading from disk: " + e.getMessage());
+            logger.warn("Error loading from disk: {}", e.getMessage());
         }
     }
 
@@ -88,8 +130,14 @@ public class QuantityMeasurementCacheRepository implements IQuantityMeasurementR
         quantityMeasurementEntityCache.clear();
         File file = new File(FILE_NAME);
         if (file.exists()) {
-            file.delete();
+            if (!file.delete()) {
+                logger.warn("Could not delete cache file {}", FILE_NAME);
+            }
         }
+    }
+
+    @Override
+    public void releaseResources() {
     }
 
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.quantityMeasurementApp;
+package com.quantityMeasurementApp.unit;
 
 public interface IMeasurable {
 

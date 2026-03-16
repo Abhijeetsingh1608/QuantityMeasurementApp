@@ -1,13 +1,17 @@
 package com.quantityMeasurementApp.model;
 
-import com.quantityMeasurementApp.IMeasurable;
-import com.quantityMeasurementApp.LengthUnit;
+import com.quantityMeasurementApp.unit.IMeasurable;
+import com.quantityMeasurementApp.unit.LengthUnit;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 public class QuantityMeasurementEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private Long id;
+    private LocalDateTime createdAt;
 
     public double thisValue;
     public String thisUnit;
@@ -75,6 +79,25 @@ public class QuantityMeasurementEntity implements Serializable {
         this.operation = operation;
     }
 
+    public QuantityMeasurementEntity() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public double getThisValue() {
         return thisValue;
     }
@@ -125,6 +148,58 @@ public class QuantityMeasurementEntity implements Serializable {
 
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    public void setThisValue(double thisValue) {
+        this.thisValue = thisValue;
+    }
+
+    public void setThisUnit(String thisUnit) {
+        this.thisUnit = thisUnit;
+    }
+
+    public void setThisMeasurementType(String thisMeasurementType) {
+        this.thisMeasurementType = thisMeasurementType;
+    }
+
+    public void setThatValue(double thatValue) {
+        this.thatValue = thatValue;
+    }
+
+    public void setThatUnit(String thatUnit) {
+        this.thatUnit = thatUnit;
+    }
+
+    public void setThatMeasurementType(String thatMeasurementType) {
+        this.thatMeasurementType = thatMeasurementType;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
+    }
+
+    public void setResultValue(double resultValue) {
+        this.resultValue = resultValue;
+    }
+
+    public void setResultUnit(String resultUnit) {
+        this.resultUnit = resultUnit;
+    }
+
+    public void setResultMeasurementType(String resultMeasurementType) {
+        this.resultMeasurementType = resultMeasurementType;
+    }
+
+    public void setResultString(String resultString) {
+        this.resultString = resultString;
+    }
+
+    public void setError(boolean error) {
+        isError = error;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
     @Override

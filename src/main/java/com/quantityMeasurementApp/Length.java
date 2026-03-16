@@ -2,6 +2,8 @@ package com.quantityMeasurementApp;
 
 import java.util.Objects;
 
+import com.quantityMeasurementApp.unit.LengthUnit;
+
 public class Length {
 
     private static final double EPSILON = 1e-6;

@@ -6,75 +6,80 @@ import com.quantityMeasurementApp.repository.IQuantityMeasurementRepository;
 import com.quantityMeasurementApp.repository.QuantityMeasurementCacheRepository;
 import com.quantityMeasurementApp.service.IQuantityMeasurementService;
 import com.quantityMeasurementApp.service.QuantityMeasurementServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class QuantityMeasurementController {
+
+    private static final Logger logger = LoggerFactory.getLogger(QuantityMeasurementController.class);
 
     private final IQuantityMeasurementService service;
 
     public QuantityMeasurementController(IQuantityMeasurementService service) {
         this.service = service;
+        logger.info("Controller initialized");
     }
 
     public void performComparison(QuantityDTO quantity1, QuantityDTO quantity2) {
         try {
             QuantityDTO result = service.compare(quantity1, quantity2);
-            System.out.println(formatComparisonResult(quantity1, quantity2, result));
+            logger.info(formatComparisonResult(quantity1, quantity2, result));
         } catch (QuantityMeasurementException e) {
-            System.out.println("Error during comparison: " + e.getMessage());
+            logger.error("Error during comparison: {}", e.getMessage());
         }
     }
 
     public void performConversion(QuantityDTO quantity, String targetUnit) {
         try {
             QuantityDTO result = service.convert(quantity, targetUnit);
-            System.out.println(formatConversionResult(quantity, result));
+            logger.info(formatConversionResult(quantity, result));
         } catch (QuantityMeasurementException e) {
-            System.out.println("Error during conversion: " + e.getMessage());
+            logger.error("Error during conversion: {}", e.getMessage());
         }
     }
 
     public void performAddition(QuantityDTO quantity1, QuantityDTO quantity2) {
         try {
             QuantityDTO result = service.add(quantity1, quantity2);
-            System.out.println(formatArithmeticResult(quantity1, quantity2, "ADD", result));
+            logger.info(formatArithmeticResult(quantity1, quantity2, "ADD", result));
         } catch (QuantityMeasurementException e) {
-            System.out.println("Error during addition: " + e.getMessage());
+            logger.error("Error during addition: {}", e.getMessage());
         }
     }
 
     public void performAddition(QuantityDTO quantity1, QuantityDTO quantity2, String targetUnit) {
         try {
             QuantityDTO result = service.add(quantity1, quantity2, targetUnit);
-            System.out.println(formatArithmeticResult(quantity1, quantity2, "ADD", result));
+            logger.info(formatArithmeticResult(quantity1, quantity2, "ADD", result));
         } catch (QuantityMeasurementException e) {
-            System.out.println("Error during addition: " + e.getMessage());
+            logger.error("Error during addition: {}", e.getMessage());
         }
     }
 
     public void performSubtraction(QuantityDTO quantity1, QuantityDTO quantity2) {
         try {
             QuantityDTO result = service.subtract(quantity1, quantity2);
-            System.out.println(formatArithmeticResult(quantity1, quantity2, "SUBTRACT", result));
+            logger.info(formatArithmeticResult(quantity1, quantity2, "SUBTRACT", result));
         } catch (QuantityMeasurementException e) {
-            System.out.println("Error during subtraction: " + e.getMessage());
+            logger.error("Error during subtraction: {}", e.getMessage());
         }
     }
 
     public void performSubtraction(QuantityDTO quantity1, QuantityDTO quantity2, String targetUnit) {
         try {
             QuantityDTO result = service.subtract(quantity1, quantity2, targetUnit);
-            System.out.println(formatArithmeticResult(quantity1, quantity2, "SUBTRACT", result));
+            logger.info(formatArithmeticResult(quantity1, quantity2, "SUBTRACT", result));
         } catch (QuantityMeasurementException e) {
-            System.out.println("Error during subtraction: " + e.getMessage());
+            logger.error("Error during subtraction: {}", e.getMessage());
         }
     }
 
     public void performDivision(QuantityDTO quantity1, QuantityDTO quantity2) {
         try {
             QuantityDTO result = service.divide(quantity1, quantity2);
-            System.out.println(formatDivisionResult(quantity1, quantity2, result));
+            logger.info(formatDivisionResult(quantity1, quantity2, result));
         } catch (QuantityMeasurementException e) {
-            System.out.println("Error during division: " + e.getMessage());
+            logger.error("Error during division: {}", e.getMessage());
         }
     }
 
@@ -136,6 +141,7 @@ public class QuantityMeasurementController {
         QuantityDTO feet = new QuantityDTO(1.0, QuantityDTO.LengthUnit.FEET);
         QuantityDTO inches = new QuantityDTO(12.0, QuantityDTO.LengthUnit.INCHES);
 
+        logger.info("Running controller demo");
         controller.performComparison(feet, inches);
         controller.performAddition(feet, inches);
     }
