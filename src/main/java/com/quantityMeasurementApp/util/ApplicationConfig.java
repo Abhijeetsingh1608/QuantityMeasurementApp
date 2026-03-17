@@ -8,7 +8,7 @@ import java.util.Properties;
 public final class ApplicationConfig {
 
     private static final String CONFIG_FILE = "application.properties";
-    private static final ApplicationConfig INSTANCE = new ApplicationConfig();
+    private static ApplicationConfig INSTANCE = new ApplicationConfig();
 
     private final Properties properties = new Properties();
 
@@ -18,6 +18,10 @@ public final class ApplicationConfig {
 
     public static ApplicationConfig getInstance() {
         return INSTANCE;
+    }
+
+    public static void reset() {
+        INSTANCE = new ApplicationConfig();
     }
 
     private void loadProperties() {
