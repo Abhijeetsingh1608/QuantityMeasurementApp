@@ -1,0 +1,296 @@
+{
+  "info": {
+    "_postman_id": "4d0f9e51-65e4-4708-863d-add8fc903342",
+    "name": "QuantityMeasurementApp",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "35135881",
+    "_collection_link": "https://go.postman.co/collection/35135881-4d0f9e51-65e4-4708-863d-add8fc903342?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "ExtraInfo",
+      "item": [
+        {
+          "name": "SwaggerUI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/swagger-ui.html",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "swagger-ui.html"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "BaseURL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}",
+              "host": [
+                "{{base}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "HealthCheck",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/actuator/health",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ActuatorMetrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/actuator/metrics",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "actuator",
+                "metrics"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "H2-Console",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/h2-console",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "h2-console"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "HistoryByOperation",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base}}/operation/{op}",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "operation",
+            "{op}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "HistoryByMeasurement",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base}}/history/type/{type}",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "history",
+            "type",
+            "{type}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "OperationCount",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base}}/count/{operation}",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "count",
+            "{operation}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "ErrorHistory",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base}}/history/errored",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "history",
+            "errored"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DivideQuantities",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"thisQuantityDTO\": {\r\n    \"value\": 0.1,\r\n    \"unit\": \"string\",\r\n    \"measurementType\": \"VolumeUnit\",\r\n    \"validUnit\": true\r\n  },\r\n  \"thatQuantityDTO\": {\r\n    \"value\": 0.1,\r\n    \"unit\": \"string\",\r\n    \"measurementType\": \"VolumeUnit\",\r\n    \"validUnit\": true\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base}}/divide",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "divide"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CompareQuantities",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base}}/compare",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "compare"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "ConvertQuantities",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"thisQuantityDTO\": {\r\n    \"value\": 0.1,\r\n    \"unit\": \"KILOGRAM\",\r\n    \"measurementType\": \"WeightUnit\",\r\n    \"validUnit\": true\r\n  },\r\n  \"thatQuantityDTO\": {\r\n    \"value\": 1,\r\n    \"unit\": \"KILOGRAM\",\r\n    \"measurementType\": \"WeightUnit\",\r\n    \"validUnit\": true\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base}}/convert",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "convert"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AddQuantities",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"thisQuantityDTO\": {\r\n    \"value\": 1,\r\n    \"unit\": \"MILLILITRE\",\r\n    \"measurementType\": \"VolumeUnit\",\r\n    \"validUnit\": true\r\n  },\r\n  \"thatQuantityDTO\": {\r\n    \"value\": 0.1,\r\n    \"unit\": \"GALLON\",\r\n    \"measurementType\": \"VolumeUnit\",\r\n    \"validUnit\": false\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base}}/add",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "add"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SubtractQuantities",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"thisQuantityDTO\": {\r\n    \"value\": 0.1,\r\n    \"unit\": \"string\",\r\n    \"measurementType\": \"LengthUnit\",\r\n    \"validUnit\": true\r\n  },\r\n  \"thatQuantityDTO\": {\r\n    \"value\": 0.1,\r\n    \"unit\": \"string\",\r\n    \"measurementType\": \"WeightUnit\",\r\n    \"validUnit\": true\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base}}/subtract",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "subtract"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

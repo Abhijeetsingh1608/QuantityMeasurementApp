@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: QuantityMeasurementApp
+Bundle-SymbolicName: QuantityMeasurementApp
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-25
+Automatic-Module-Name: QuantityMeasurementApp
+Export-Package: com.quantityMeasurementApp,
+ com.quantityMeasurementApp.controller,
+ com.quantityMeasurementApp.dto,
+ com.quantityMeasurementApp.exception,
+ com.quantityMeasurementApp.integrationTests,
+ com.quantityMeasurementApp.model,
+ com.quantityMeasurementApp.repository,
+ com.quantityMeasurementApp.service,
+ com.quantityMeasurementApp.unit,
+ com.quantityMeasurementApp.util
