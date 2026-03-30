@@ -19,6 +19,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
   security:
     oauth2:
       client:
@@ -31,12 +32,6 @@ spring:
               - profile
               - openid
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-        provider:
-          google:
-            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
-            token-uri: https://oauth2.googleapis.com/token
-            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
-            user-name-attribute: sub
 
 app:
   oauth2:
@@ -58,6 +53,4 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
-    path: /swagger-ui.html     
-
-
+    path: /swagger-ui.html

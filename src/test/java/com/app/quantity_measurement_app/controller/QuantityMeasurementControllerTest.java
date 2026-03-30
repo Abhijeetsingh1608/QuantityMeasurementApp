@@ -1,5 +1,4 @@
 package com.app.quantity_measurement_app.controller;
-
 import com.app.quantity_measurement_app.dto.QuantityDTO;
 import com.app.quantity_measurement_app.dto.QuantityInputDTO;
 import com.app.quantity_measurement_app.dto.QuantityMeasurementDTO;
@@ -9,24 +8,35 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.mockito.Mockito;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 import org.springframework.http.MediaType;
+
 import org.springframework.security.test.context.support.WithMockUser;
+
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
 import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @WithMockUser
+@ActiveProfiles("test")
 class QuantityMeasurementControllerTest {
 
     @Autowired
@@ -59,7 +69,8 @@ class QuantityMeasurementControllerTest {
         result.setResultString("true");
         result.setError(false);
 
-        Mockito.when(service.compareQuantities(Mockito.any(), Mockito.any())).thenReturn(result);
+        Mockito.when(service.compareQuantities(any(QuantityDTO.class), any(QuantityDTO.class), any()))
+                .thenReturn(result);
 
         mockMvc.perform(post("/api/v1/quantities/compare")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -69,7 +80,7 @@ class QuantityMeasurementControllerTest {
                 .andExpect(jsonPath("$.resultString").value("true"))
                 .andExpect(jsonPath("$.error").value(false));
 
-        Mockito.verify(service).compareQuantities(Mockito.any(), Mockito.any());
+        Mockito.verify(service).compareQuantities(any(QuantityDTO.class), any(QuantityDTO.class), any());
     }
 
     @Test
@@ -91,7 +102,8 @@ class QuantityMeasurementControllerTest {
         result.setResultMeasurementType("LengthUnit");
         result.setError(false);
 
-        Mockito.when(service.addQuantities(Mockito.any(), Mockito.any())).thenReturn(result);
+        Mockito.when(service.addQuantities(any(QuantityDTO.class), any(QuantityDTO.class), any()))
+                .thenReturn(result);
 
         mockMvc.perform(post("/api/v1/quantities/add")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -119,7 +131,8 @@ class QuantityMeasurementControllerTest {
         result.setResultValue(12.0);
         result.setError(false);
 
-        Mockito.when(service.convertQuantity(Mockito.any(), Mockito.any())).thenReturn(result);
+        Mockito.when(service.convertQuantity(any(QuantityDTO.class), any(QuantityDTO.class), any()))
+                .thenReturn(result);
 
         mockMvc.perform(post("/api/v1/quantities/convert")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -127,6 +140,50 @@ class QuantityMeasurementControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.operation").value("convert"))
                 .andExpect(jsonPath("$.resultValue").value(12.0));
+    }
+
+    @Test
+    void testSubtractQuantities() throws Exception {
+        QuantityDTO q1 = new QuantityDTO(5.0, "FEET", "LengthUnit");
+        QuantityDTO q2 = new QuantityDTO(2.0, "FEET", "LengthUnit");
+        QuantityInputDTO input = new QuantityInputDTO(q1, q2);
+
+        QuantityMeasurementDTO result = new QuantityMeasurementDTO();
+        result.setOperation("subtract");
+        result.setResultValue(3.0);
+        result.setError(false);
+
+        Mockito.when(service.subtractQuantities(any(QuantityDTO.class), any(QuantityDTO.class), any()))
+                .thenReturn(result);
+
+        mockMvc.perform(post("/api/v1/quantities/subtract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.operation").value("subtract"))
+                .andExpect(jsonPath("$.resultValue").value(3.0));
+    }
+
+    @Test
+    void testDivideQuantities() throws Exception {
+        QuantityDTO q1 = new QuantityDTO(6.0, "FEET", "LengthUnit");
+        QuantityDTO q2 = new QuantityDTO(2.0, "FEET", "LengthUnit");
+        QuantityInputDTO input = new QuantityInputDTO(q1, q2);
+
+        QuantityMeasurementDTO result = new QuantityMeasurementDTO();
+        result.setOperation("divide");
+        result.setResultValue(3.0);
+        result.setError(false);
+
+        Mockito.when(service.divideQuantities(any(QuantityDTO.class), any(QuantityDTO.class), any()))
+                .thenReturn(result);
+
+        mockMvc.perform(post("/api/v1/quantities/divide")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.operation").value("divide"))
+                .andExpect(jsonPath("$.resultValue").value(3.0));
     }
 
     @Test

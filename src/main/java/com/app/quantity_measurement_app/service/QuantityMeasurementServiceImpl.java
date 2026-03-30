@@ -5,6 +5,7 @@ import com.app.quantity_measurement_app.dto.QuantityDTO;
 import com.app.quantity_measurement_app.dto.QuantityMeasurementDTO;
 import com.app.quantity_measurement_app.exception.QuantityMeasurementException;
 import com.app.quantity_measurement_app.model.QuantityMeasurementEntity;
+import com.app.quantity_measurement_app.model.User;
 import com.app.quantity_measurement_app.repository.QuantityMeasurementRepository;
 import com.app.quantity_measurement_app.unit.IMeasurable;
 import org.slf4j.Logger;
@@ -23,8 +24,9 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
     private QuantityMeasurementRepository repository;
 
     @Override
-    public QuantityMeasurementDTO compareQuantities(QuantityDTO quantity1, QuantityDTO quantity2) {
+    public QuantityMeasurementDTO compareQuantities(QuantityDTO quantity1, QuantityDTO quantity2, User user) {
         QuantityMeasurementEntity entity = new QuantityMeasurementEntity();
+        entity.setUser(user);
         try {
             validateInputs(quantity1, quantity2);
             validateSameCategory(quantity1, quantity2);
@@ -41,7 +43,7 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
             entity.setResultString(String.valueOf(isEqual));
             entity.setError(false);
             repository.save(entity);
-            logger.debug("COMPARE persisted");
+            logger.debug("COMPARE persisted for user: {}", user != null ? user.getEmail() : "anonymous");
 
             return QuantityMeasurementDTO.fromEntity(entity);
 
@@ -52,8 +54,9 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
     }
 
     @Override
-    public QuantityMeasurementDTO convertQuantity(QuantityDTO quantity1, QuantityDTO quantity2) {
+    public QuantityMeasurementDTO convertQuantity(QuantityDTO quantity1, QuantityDTO quantity2, User user) {
         QuantityMeasurementEntity entity = new QuantityMeasurementEntity();
+        entity.setUser(user);
         try {
             if (quantity1 == null) {
                 throw new IllegalArgumentException("Source quantity cannot be null");
@@ -68,7 +71,7 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
             entity.setResultValue(convertedValue);
             entity.setError(false);
             repository.save(entity);
-            logger.debug("CONVERT persisted");
+            logger.debug("CONVERT persisted for user: {}", user != null ? user.getEmail() : "anonymous");
 
             return QuantityMeasurementDTO.fromEntity(entity);
 
@@ -79,8 +82,9 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
     }
 
     @Override
-    public QuantityMeasurementDTO addQuantities(QuantityDTO quantity1, QuantityDTO quantity2) {
+    public QuantityMeasurementDTO addQuantities(QuantityDTO quantity1, QuantityDTO quantity2, User user) {
         QuantityMeasurementEntity entity = new QuantityMeasurementEntity();
+        entity.setUser(user);
         try {
             validateInputs(quantity1, quantity2);
             validateSameCategory(quantity1, quantity2);
@@ -100,7 +104,7 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
             entity.setResultMeasurementType(result.getUnit().getMeasurementType());
             entity.setError(false);
             repository.save(entity);
-            logger.debug("ADD persisted");
+            logger.debug("ADD persisted for user: {}", user != null ? user.getEmail() : "anonymous");
 
             return QuantityMeasurementDTO.fromEntity(entity);
 
@@ -111,8 +115,9 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
     }
 
     @Override
-    public QuantityMeasurementDTO subtractQuantities(QuantityDTO quantity1, QuantityDTO quantity2) {
+    public QuantityMeasurementDTO subtractQuantities(QuantityDTO quantity1, QuantityDTO quantity2, User user) {
         QuantityMeasurementEntity entity = new QuantityMeasurementEntity();
+        entity.setUser(user);
         try {
             validateInputs(quantity1, quantity2);
             validateSameCategory(quantity1, quantity2);
@@ -132,7 +137,7 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
             entity.setResultMeasurementType(result.getUnit().getMeasurementType());
             entity.setError(false);
             repository.save(entity);
-            logger.debug("SUBTRACT persisted");
+            logger.debug("SUBTRACT persisted for user: {}", user != null ? user.getEmail() : "anonymous");
 
             return QuantityMeasurementDTO.fromEntity(entity);
 
@@ -143,8 +148,9 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
     }
 
     @Override
-    public QuantityMeasurementDTO divideQuantities(QuantityDTO quantity1, QuantityDTO quantity2) {
+    public QuantityMeasurementDTO divideQuantities(QuantityDTO quantity1, QuantityDTO quantity2, User user) {
         QuantityMeasurementEntity entity = new QuantityMeasurementEntity();
+        entity.setUser(user);
         try {
             validateInputs(quantity1, quantity2);
             validateSameCategory(quantity1, quantity2);
@@ -161,7 +167,7 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
             entity.setResultValue(result);
             entity.setError(false);
             repository.save(entity);
-            logger.debug("DIVIDE persisted");
+            logger.debug("DIVIDE persisted for user: {}", user != null ? user.getEmail() : "anonymous");
 
             return QuantityMeasurementDTO.fromEntity(entity);
 
@@ -194,6 +200,35 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
     @Override
     public List<QuantityMeasurementDTO> getErrorHistory() {
         List<QuantityMeasurementEntity> entities = repository.findByIsErrorTrue();
+        return QuantityMeasurementDTO.fromEntityList(entities);
+    }
+
+    @Override
+    public List<QuantityMeasurementDTO> getUserHistory(User user) {
+        List<QuantityMeasurementEntity> entities = repository.findByUser(user);
+        return QuantityMeasurementDTO.fromEntityList(entities);
+    }
+
+    @Override
+    public List<QuantityMeasurementDTO> getUserHistoryByOperation(User user, String operation) {
+        List<QuantityMeasurementEntity> entities = repository.findByUserAndOperation(user, operation);
+        return QuantityMeasurementDTO.fromEntityList(entities);
+    }
+
+    @Override
+    public List<QuantityMeasurementDTO> getUserHistoryByMeasurementType(User user, String measurementType) {
+        List<QuantityMeasurementEntity> entities = repository.findByUserAndThisMeasurementType(user, measurementType);
+        return QuantityMeasurementDTO.fromEntityList(entities);
+    }
+
+    @Override
+    public long getUserCountByOperation(User user, String operation) {
+        return repository.countByUserAndOperationAndIsErrorFalse(user, operation);
+    }
+
+    @Override
+    public List<QuantityMeasurementDTO> getUserErrorHistory(User user) {
+        List<QuantityMeasurementEntity> entities = repository.findByUserAndIsErrorTrue(user);
         return QuantityMeasurementDTO.fromEntityList(entities);
     }
 

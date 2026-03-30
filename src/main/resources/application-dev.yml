@@ -19,6 +19,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
   security:
     oauth2:
       client:
@@ -58,6 +59,5 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
-    path: /swagger-ui.html     
-
+    path: /swagger-ui.html
 

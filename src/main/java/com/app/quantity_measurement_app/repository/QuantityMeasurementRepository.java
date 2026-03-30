@@ -1,6 +1,7 @@
 package com.app.quantity_measurement_app.repository;
 
 import com.app.quantity_measurement_app.model.QuantityMeasurementEntity;
+import com.app.quantity_measurement_app.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,4 +25,17 @@ public interface QuantityMeasurementRepository extends JpaRepository<QuantityMea
     long countByOperationAndIsErrorFalse(String operation);
 
     List<QuantityMeasurementEntity> findByIsErrorTrue();
+
+    List<QuantityMeasurementEntity> findByUser(User user);
+
+    List<QuantityMeasurementEntity> findByUserAndOperation(User user, String operation);
+
+    List<QuantityMeasurementEntity> findByUserAndThisMeasurementType(User user, String measurementType);
+
+    long countByUserAndOperationAndIsErrorFalse(User user, String operation);
+
+    List<QuantityMeasurementEntity> findByUserAndIsErrorTrue(User user);
+
+    @Query("SELECT q FROM QuantityMeasurementEntity q WHERE q.user.id = :userId ORDER BY q.createdAt DESC")
+    List<QuantityMeasurementEntity> findByUserIdOrderByCreatedAtDesc(@Param("userId") Long userId);
 }
