@@ -41,7 +41,7 @@ spring:
 
 app:
   oauth2:
-    redirect-uri: http://localhost:8080/pages/auth/index.html
+    redirect-uri: http://localhost:3000/auth
   jwt:
     secret: VGhpc0lzQVNlY3VyZVNob3VsZEF0TGVhc3QzMkNoYXJhY3RlcnNMb25n
     expiration-ms: 86400000

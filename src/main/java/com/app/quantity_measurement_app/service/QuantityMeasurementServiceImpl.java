@@ -1,6 +1,6 @@
 package com.app.quantity_measurement_app.service;
 
-import com.app.quantity_measurement_app.Quantity;
+import com.app.quantity_measurement_app.unit.Quantity;
 import com.app.quantity_measurement_app.dto.QuantityDTO;
 import com.app.quantity_measurement_app.dto.QuantityMeasurementDTO;
 import com.app.quantity_measurement_app.exception.QuantityMeasurementException;

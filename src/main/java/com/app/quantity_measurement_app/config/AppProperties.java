@@ -27,7 +27,7 @@ public class AppProperties {
     }
 
     public static class OAuth2Properties {
-        private String redirectUri = "http://localhost:8080/pages/auth/index.html";
+        private String redirectUri = "http://localhost:3000/auth";
 
         public String getRedirectUri() {
             return redirectUri;
@@ -39,7 +39,7 @@ public class AppProperties {
     }
 
     public static class JwtProperties {
-        private String secret = "VGhpc0lzQVNlY3VyZVNob3VsZEJlQXRMZWFzdDMyQ2hhcmFjdGVyc0xvbmdGb3JKV1Q=";
+        private String secret = "VGhpc0lzQVNlY3VyZVNob3VsZEF0TGVhc3QzMkNoYXJhY3RlcnNMb25n";
         private long expirationMs = 86400000;
 
         public String getSecret() {

@@ -31,19 +31,22 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                                         Authentication authentication) throws IOException, ServletException {
         if (authentication.getPrincipal() instanceof CustomUserPrincipal customUser) {
             logger.info("OAuth2 authentication successful for user: {}", customUser.getEmail());
+
             String token = jwtService.generateToken(customUser.getUser());
             response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
 
+            // ✅ Redirect to /oauth2/callback — a dedicated frontend route
+            // ❌ Never redirect to /auth — Vite proxies /auth back to Spring Boot causing a loop
             String redirectUri = UriComponentsBuilder
                     .fromUriString(appProperties.getOauth2().getRedirectUri())
                     .queryParam("token", token)
                     .queryParam("provider", customUser.getUser().getAuthProvider().name())
                     .build()
                     .toUriString();
+
             getRedirectStrategy().sendRedirect(request, response, redirectUri);
             return;
         }
-
         super.onAuthenticationSuccess(request, response, authentication);
     }
 }
