@@ -64,4 +64,3 @@ Thumbs.db
 
 ### Serialized cache ###
 *.ser
-build.properties
