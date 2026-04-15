@@ -1,25 +1,25 @@
 spring:
-  application:
-    name: ${SPRING_APPLICATION_NAME:quantity-measurement-app}
-
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:prod}
-
   datasource:
     url: ${DB_URL}
+    driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      connection-timeout: 20000
+      idle-timeout: 10000
+      max-lifetime: 30000
+      validation-timeout: 5000
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
-    show-sql: ${JPA_SHOW_SQL:false}
-    properties:
-      hibernate:
-        format_sql: ${JPA_FORMAT_SQL:false}
+      ddl-auto: ${DB_INIT_MODE:update}
 
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Google OAuth2
+  # ─────────────────────────────────────────────────────────────────────────────
   security:
     oauth2:
       client:
@@ -27,37 +27,98 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope:
               - email
               - profile
-              - openid
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-        provider:
-          google:
-            authorization-uri: ${GOOGLE_AUTHORIZATION_URI:https://accounts.google.com/o/oauth2/v2/auth}
-            token-uri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
-            user-info-uri: ${GOOGLE_USER_INFO_URI:https://www.googleapis.com/oauth2/v3/userinfo}
-            user-name-attribute: ${GOOGLE_USER_NAME_ATTRIBUTE:sub}
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Email / SMTP
+  # ─────────────────────────────────────────────────────────────────────────────
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          timeout: 5000
+          connectiontimeout: 5000
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Async (for EmailService)
+  # ─────────────────────────────────────────────────────────────────────────────
+  task:
+    execution:
+      pool:
+        core-size: 2
+        max-size: 5
+        queue-capacity: 100
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Server
+# ─────────────────────────────────────────────────────────────────────────────
+server:
+  port: ${PORT:1000}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# App Custom Properties
+# ─────────────────────────────────────────────────────────────────────────────
+repository:
+  type: database
 
 app:
+  auth:
+    tokenSecret: ${APP_AUTH_TOKEN_SECRET}
+    tokenExpirationMsec: ${APP_AUTH_TOKEN_EXPIRATION_MSEC:864000000}
+    refreshTokenExpirationMsec: ${APP_AUTH_REFRESH_TOKEN_EXPIRATION_MSEC:2592000000}
   oauth2:
-    redirect-uri: ${APP_OAUTH2_REDIRECT_URI}
-  jwt:
-    secret: ${APP_JWT_SECRET}
-    expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000}
+    redirectUri: ${APP_OAUTH2_REDIRECT_URI:http://localhost:4200/oauth2/callback}
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Swagger / OpenAPI
+# ─────────────────────────────────────────────────────────────────────────────
 springdoc:
   api-docs:
-    enabled: ${SPRINGDOC_API_DOCS_ENABLED:true}
+    path: /api-docs
   swagger-ui:
-    enabled: ${SPRINGDOC_SWAGGER_UI_ENABLED:true}
-    path: ${SPRINGDOC_SWAGGER_UI_PATH:/swagger-ui.html}
+    path: /swagger-ui.html
+    enabled: true
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Actuator
+# ─────────────────────────────────────────────────────────────────────────────
 management:
   endpoints:
     web:
       exposure:
-        include: ${MANAGEMENT_EXPOSURE_INCLUDE:health,info,metrics}
+        include: health,metrics,info
   endpoint:
     health:
-      show-details: ${MANAGEMENT_HEALTH_SHOW_DETAILS:always}
+      show-details: always
+    metrics:
+      enabled: true
+    info:
+      enabled: true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Logging
+# ─────────────────────────────────────────────────────────────────────────────
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web.servlet.mvc: TRACE
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.app.quantitymeasurement: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{5}:%line - %msg%n"
+
+spring.mvc.log-request-details: true
+spring.mvc.log-resolved-exception: true
