@@ -17,9 +17,6 @@ spring:
     hibernate:
       ddl-auto: ${DB_INIT_MODE:update}
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Google OAuth2
-  # ─────────────────────────────────────────────────────────────────────────────
   security:
     oauth2:
       client:
@@ -32,9 +29,6 @@ spring:
               - email
               - profile
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Email / SMTP
-  # ─────────────────────────────────────────────────────────────────────────────
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
@@ -49,9 +43,6 @@ spring:
           timeout: 5000
           connectiontimeout: 5000
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Async (for EmailService)
-  # ─────────────────────────────────────────────────────────────────────────────
   task:
     execution:
       pool:
@@ -59,15 +50,9 @@ spring:
         max-size: 5
         queue-capacity: 100
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Server
-# ─────────────────────────────────────────────────────────────────────────────
 server:
   port: ${PORT:1000}
 
-# ─────────────────────────────────────────────────────────────────────────────
-# App Custom Properties
-# ─────────────────────────────────────────────────────────────────────────────
 repository:
   type: database
 
@@ -77,11 +62,8 @@ app:
     tokenExpirationMsec: ${APP_AUTH_TOKEN_EXPIRATION_MSEC:864000000}
     refreshTokenExpirationMsec: ${APP_AUTH_REFRESH_TOKEN_EXPIRATION_MSEC:2592000000}
   oauth2:
-    redirectUri: ${APP_OAUTH2_REDIRECT_URI:http://localhost:4200/oauth2/callback}
+    redirectUri: ${APP_OAUTH2_REDIRECT_URI:https://quantity-measurement-app-frontend-tau.vercel.app
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Swagger / OpenAPI
-# ─────────────────────────────────────────────────────────────────────────────
 springdoc:
   api-docs:
     path: /api-docs
@@ -89,9 +71,6 @@ springdoc:
     path: /swagger-ui.html
     enabled: true
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Actuator
-# ─────────────────────────────────────────────────────────────────────────────
 management:
   endpoints:
     web:
@@ -105,9 +84,6 @@ management:
     info:
       enabled: true
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Logging
-# ─────────────────────────────────────────────────────────────────────────────
 logging:
   level:
     root: INFO
