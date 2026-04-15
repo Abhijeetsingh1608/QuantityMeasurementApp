@@ -1,37 +1,44 @@
 spring:
   application:
-    name: quantity-measurement-app
+    name: ${SPRING_APPLICATION_NAME:quantity-measurement-app}
 
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
 
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Datasource
+  # ─────────────────────────────────────────────────────────────────────────────
   datasource:
-    url: jdbc:mysql://localhost:3306/quantity_measurement?useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://localhost:3306/quantity_measurement?useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: ${DB_DRIVER_CLASS_NAME:com.mysql.cj.jdbc.Driver}
     hikari:
-      maximum-pool-size: 10
-      minimum-idle: 2
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
+      maximum-pool-size: ${DB_MAX_POOL_SIZE:10}
+      minimum-idle: ${DB_MIN_IDLE:2}
+      connection-timeout: ${DB_CONNECTION_TIMEOUT:30000}
+      idle-timeout: ${DB_IDLE_TIMEOUT:600000}
+      max-lifetime: ${DB_MAX_LIFETIME:1800000}
 
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JPA / Hibernate
+  # ─────────────────────────────────────────────────────────────────────────────
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${JPA_SHOW_SQL:true}
     properties:
       hibernate:
-        format_sql: true
+        format_sql: ${JPA_FORMAT_SQL:true}
 
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Google OAuth2
+  # ─────────────────────────────────────────────────────────────────────────────
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: 66070007025-ktjj8k4nmr6htiiu43is89cabv4nqoh4.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             scope:
               - email
               - profile
@@ -39,39 +46,50 @@ spring:
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
         provider:
           google:
-            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
-            token-uri: https://oauth2.googleapis.com/token
-            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
-            user-name-attribute: sub
+            authorization-uri: ${GOOGLE_AUTHORIZATION_URI:https://accounts.google.com/o/oauth2/v2/auth}
+            token-uri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
+            user-info-uri: ${GOOGLE_USER_INFO_URI:https://www.googleapis.com/oauth2/v3/userinfo}
+            user-name-attribute: ${GOOGLE_USER_NAME_ATTRIBUTE:sub}
 
+# ─────────────────────────────────────────────────────────────────────────────
+# App Custom Properties
+# ─────────────────────────────────────────────────────────────────────────────
 app:
   oauth2:
-    # ✅ Changed from /auth to /oauth2/callback — avoids Vite proxy loop
-    redirect-uri: http://localhost:3000/oauth2/callback
+    redirect-uri: ${APP_OAUTH2_REDIRECT_URI:http://localhost:3000/oauth2/callback}
   jwt:
-    secret: ${APP_JWT_SECRET:VGhpc0lzQVNlY3VyZVNob3VsZEF0TGVhc3QzMkNoYXJhY3RlcnNMb25n}
+    secret: ${APP_JWT_SECRET}
     expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000}
 
-logging:
-  level:
-    root: INFO
-    com.app.quantity_measurement_app: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.web: DEBUG
-    org.hibernate.SQL: DEBUG
-
+# ─────────────────────────────────────────────────────────────────────────────
+# Swagger / OpenAPI
+# ─────────────────────────────────────────────────────────────────────────────
 springdoc:
   api-docs:
-    enabled: true
+    enabled: ${SPRINGDOC_API_DOCS_ENABLED:true}
   swagger-ui:
-    enabled: true
-    path: /swagger-ui.html
+    enabled: ${SPRINGDOC_SWAGGER_UI_ENABLED:true}
+    path: ${SPRINGDOC_SWAGGER_UI_PATH:/swagger-ui.html}
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Actuator
+# ─────────────────────────────────────────────────────────────────────────────
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: ${MANAGEMENT_EXPOSURE_INCLUDE:health,info,metrics}
   endpoint:
     health:
-      show-details: always
+      show-details: ${MANAGEMENT_HEALTH_SHOW_DETAILS:always}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Logging
+# ─────────────────────────────────────────────────────────────────────────────
+logging:
+  level:
+    root: ${LOG_ROOT_LEVEL:INFO}
+    com.app.quantity_measurement_app: ${LOG_APP_LEVEL:DEBUG}
+    org.springframework.security: ${LOG_SECURITY_LEVEL:DEBUG}
+    org.springframework.web: ${LOG_WEB_LEVEL:DEBUG}
+    org.hibernate.SQL: ${LOG_HIBERNATE_SQL_LEVEL:DEBUG}
