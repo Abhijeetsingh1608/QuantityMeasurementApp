@@ -1,0 +1,43 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: measurement-route
+          uri: lb://measurement-service
+          predicates:
+            - Path=/api/convert/**
+          filters:
+            - StripPrefix=0
+        - id: measurement-history-route
+          uri: lb://measurement-service
+          predicates:
+            - Path=/api/measurements/**
+        - id: user-route
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,metrics,env,loggers,threaddump
+  endpoint:
+    health:
+      show-details: always
